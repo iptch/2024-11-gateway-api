@@ -6,3 +6,6 @@ resources:
   - istio-namespace.yaml
   - istio-repository.yaml
   - istio-base-release.yaml
+  - istio-cni-release.yaml
+  - istiod-release.yaml
+  - ztunnel-release.yaml

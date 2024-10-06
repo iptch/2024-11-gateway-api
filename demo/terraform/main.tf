@@ -161,3 +161,57 @@ resource "vault_pki_secret_backend_config_urls" "pki_int_urls" {
 
   depends_on = [vault_pki_secret_backend_intermediate_set_signed.pki_int]
 }
+
+# Enable the AppRole auth method
+resource "vault_auth_backend" "approle" {
+  type        = "approle"
+  description = "AppRole auth backend"
+
+  depends_on = [vault_pki_secret_backend_intermediate_set_signed.pki_int]
+}
+
+# Create a role named "cluster-dot-local" in the pki_int backend
+resource "vault_pki_secret_backend_role" "cluster_dot_local" {
+  backend         = vault_mount.pki_int.path
+  name            = "cluster-dot-local"
+  allowed_domains = ["cluster.local"]
+  allow_subdomains = true
+  max_ttl         = "72h"
+
+  depends_on = [vault_pki_secret_backend_config_urls.pki_int_urls]
+}
+
+# Create the cert-manager policy
+resource "vault_policy" "cert_manager" {
+  name = "cert-manager"
+
+  policy = <<EOF
+path "${vault_mount.pki_int.path}/sign/${vault_pki_secret_backend_role.cluster_dot_local.name}" {
+  capabilities = ["update"]
+}
+EOF
+
+  depends_on = [
+    vault_auth_backend.approle,
+    vault_pki_secret_backend_role.cluster_dot_local
+  ]
+}
+
+# Create the AppRole named cert-manager
+resource "vault_approle_auth_backend_role" "cert_manager" {
+  backend       = vault_auth_backend.approle.path
+  role_name     = "cert-manager"
+  token_policies = [vault_policy.cert_manager.name]
+  token_ttl     = 3600      # 1h in seconds
+  token_max_ttl = 14400     # 4h in seconds
+
+  depends_on = [vault_policy.cert_manager]
+}
+
+# Generate a secret-id for the AppRole
+resource "vault_approle_auth_backend_role_secret_id" "cert_manager" {
+  backend   = vault_auth_backend.approle.path
+  role_name = vault_approle_auth_backend_role.cert_manager.role_name
+
+  depends_on = [vault_approle_auth_backend_role.cert_manager]
+}

@@ -9,3 +9,6 @@ resources:
   - istio-cni-release.yaml
   - istiod-release.yaml
   - ztunnel-release.yaml
+  - cert-manager-namespace.yaml
+  - cert-manager-release.yaml
+  - cert-manager-repository.yaml

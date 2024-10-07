@@ -15,6 +15,8 @@ terraform {
   }
 }
 
+# Launch Vault
+
 variable "vault_address" {
   default = "http://127.0.0.1:8200"
 }
@@ -57,6 +59,8 @@ resource "null_resource" "wait_for_vault" {
   }
 }
 
+# Create Vault PKI
+
 resource "vault_mount" "pki" {
   path                      = "pki"
   type                      = "pki"
@@ -93,6 +97,8 @@ resource "vault_pki_secret_backend_config_urls" "pki_urls" {
   crl_distribution_points = ["${var.vault_address}/v1/${vault_mount.pki.path}/crl"]
 }
 
+# Create Vault Intermediate PKI
+
 resource "vault_mount" "pki_int" {
   path                      = "pki_int"
   type                      = "pki"
@@ -121,7 +127,7 @@ resource "local_file" "pki_intermediate_csr" {
   depends_on = [vault_pki_secret_backend_intermediate_cert_request.pki_int]
 }
 
-# STEP 4: Sign the intermediate CSR with the root CA
+# Sign the intermediate CSR with the root CA
 resource "vault_pki_secret_backend_root_sign_intermediate" "pki_int_signed" {
   backend = vault_mount.pki.path  # Root CA backend
   csr = vault_pki_secret_backend_intermediate_cert_request.pki_int.csr
@@ -144,7 +150,7 @@ resource "local_file" "intermediate_cert_pem" {
   depends_on = [vault_pki_secret_backend_root_sign_intermediate.pki_int_signed]
 }
 
-# STEP 5: Set the signed certificate in the 'pki_int' backend
+# Set the signed certificate in the 'pki_int' backend
 resource "vault_pki_secret_backend_intermediate_set_signed" "pki_int" {
   backend     = vault_mount.pki_int.path
   certificate = vault_pki_secret_backend_root_sign_intermediate.pki_int_signed.certificate

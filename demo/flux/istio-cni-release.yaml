@@ -6,7 +6,6 @@ metadata:
 spec:
   dependsOn:
     - name: istio-base
-    - name: istiod
   interval: "5m"
   install:
     createNamespace: true

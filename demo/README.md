@@ -39,7 +39,7 @@ This will slowly bootstrap the entire infrastructure according to a dependency t
 following command to return a pod to ensure most of the infrastructure is ready:
 
 ```bash
-kubectl get pods -n istio-system -l service.istio.io/canonical-name=kiali-gateway-istio
+kubectl get pods -n infra-gateway-system -l service.istio.io/canonical-name=prod-gateway-istio
 ```
 
 ### Access
@@ -47,7 +47,20 @@ kubectl get pods -n istio-system -l service.istio.io/canonical-name=kiali-gatewa
 Change your `/etc/hosts` file to contain an entry for routing traffic to the cluster:
 
 ```
-127.0.0.1 kiali.example.com
+127.0.0.1 kiali.apps.example.com httpbin.apps.example.com
 ```
 
-You can then access
+You can then access Kiali via `kiali.apps.example.com:9080` in your browser.
+
+Generate some load on `httpbin` to see it in Kiali:
+
+```bash
+while true; do
+   curl http://httpbin.apps.example.com:9080/headers
+   sleep 1s
+done
+```
+
+In Kiali, select the following options, and you will see the traffic appear:
+
+![](./assets/kiali-options.png)

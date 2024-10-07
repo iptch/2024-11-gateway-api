@@ -8,10 +8,10 @@
     "fluxcd@2.3.0",
     "k3d@5.7.4",
     "postgresql@16.4",
-    "terraform@1.6.2-dev"
+    "terraform@1.6.2"
   ],
   "shell": {
     "init_hook": [],
-    "scripts":   {}
+    "scripts": {}
   }
 }

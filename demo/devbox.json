@@ -7,10 +7,10 @@
     "kubectl@1.31.0",
     "kubernetes-helm@3.16.1",
     "fluxcd@2.3.0",
-    "terraform@1.6.2-dev"
+    "terraform@1.6.2"
   ],
   "shell": {
     "init_hook": [],
-    "scripts":   {}
+    "scripts": {}
   }
 }

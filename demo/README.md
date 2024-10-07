@@ -50,13 +50,13 @@ Change your `/etc/hosts` file to contain an entry for routing traffic to the clu
 127.0.0.1 kiali.apps.example.com httpbin.apps.example.com
 ```
 
-You can then access Kiali via `kiali.apps.example.com:9080` in your browser.
+You can then access Kiali via `kiali.apps.example.com:8080` in your browser.
 
 Generate some load on `httpbin` to see it in Kiali:
 
 ```bash
 while true; do
-   curl http://httpbin.apps.example.com:9080/headers
+   curl http://httpbin.apps.example.com:8080/headers
    sleep 1s
 done
 ```

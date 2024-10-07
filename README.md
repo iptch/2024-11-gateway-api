@@ -1,6 +1,10 @@
 # 2024-11-gateway-api
 
-Repository containing the demo environment and presentation for Kubernetes Gateway API
+Repository containing the demo environment and presentation for Kubernetes Gateway API.
+
+## Setup
+
+TODO add information about the setups.
 
 ## Idea
 
@@ -16,21 +20,11 @@ Content:
 
 ### Demo
 
-Setup:
-
-- Use KinD for local cluster
-- Deploy Vault externally (docker / dev mode to avoid unseal)
-- Deploy ArgoCD
-- Deploy cert-manager and istio-csr to link istio with cert manager (via argocd)
-- Link cert-manager with vault for PKI (use kube auth and terraform for config)
-- Deploy Istio in Ambient mode (sidecar less), via argocd
-
-Links:
-
-- https://www.solo.io/blog/istio-ambient-argo-cd-kind-15-minutes/
-- https://medium.com/israeli-tech-radar/how-to-integrate-vault-as-external-root-ca-with-cert-manager-istio-csr-and-istio-7684baa369db
-
 Demo:
 
-- Showcase different apps (HTTP/TCP/etc) ingress
-- Showcase east-west traffic (SM integration)
+1. Explain the setup, including existing Gateway and HTTPRoutes.
+2. Create new Gateways for ingress using a different port (81-100).
+3. Create an HTTPRoute to showcase north-south traffic.
+4. Potentially showcase TCPRoute to show routing for TCP workloads.
+5. Create a Gateway for an istio Waypoint (showcase east/west traffic).
+6. Use routes and gateways to enforce authentication or similar.

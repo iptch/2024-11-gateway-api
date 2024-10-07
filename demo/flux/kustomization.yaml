@@ -14,6 +14,13 @@ resources:
   # kiali setup
   - https://raw.githubusercontent.com/istio/istio/release-1.23/samples/addons/prometheus.yaml
   - https://raw.githubusercontent.com/istio/istio/release-1.23/samples/addons/kiali.yaml
-  # kiali gateway
-  - istio-kiali-gateway.yaml
-  - istio-kiali-route.yaml
+  # infra gateway
+  - infra-gateway-namespace.yaml
+  - infra-gateway.yaml
+  # kiali route
+  - istio-kiali-httproute.yaml
+  # app
+  - httpbin-namespace.yaml
+  - matheusfm-repository.yaml
+  - httpbin-release.yaml
+  - httpbin-httproute.yaml

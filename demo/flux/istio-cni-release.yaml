@@ -6,7 +6,10 @@ metadata:
 spec:
   dependsOn:
     - name: istio-base
+    - name: istiod
   interval: "5m"
+  install:
+    createNamespace: true
   chart:
     spec:
       chart: cni
@@ -18,3 +21,6 @@ spec:
       interval: 12h
   values:
     profile: ambient
+    cni:
+      cniConfDir: /var/lib/rancher/k3s/agent/etc/cni/net.d
+      cniBinDir: /bin

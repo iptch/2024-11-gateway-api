@@ -2,10 +2,18 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+  # gateway api resources
   - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
+  # istio ambient mode setup
   - istio-namespace.yaml
   - istio-repository.yaml
   - istio-base-release.yaml
   - istio-cni-release.yaml
   - istiod-release.yaml
   - ztunnel-release.yaml
+  # kiali setup
+  - https://raw.githubusercontent.com/istio/istio/release-1.23/samples/addons/prometheus.yaml
+  - https://raw.githubusercontent.com/istio/istio/release-1.23/samples/addons/kiali.yaml
+  # kiali gateway
+  - istio-kiali-gateway.yaml
+  - istio-kiali-route.yaml

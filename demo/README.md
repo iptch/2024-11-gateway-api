@@ -3,7 +3,7 @@
 We use `devbox` to install the required tooling for the setup, such as:
 
 - `vault`
-- `kind`
+- `k3d`
 - `kubectl`
 - `istioctl`
 - `helm`
@@ -22,8 +22,8 @@ For fined-grained control, grant the token Content read/write permissions on the
 ### Setup the Cluster
 
 ```bash
-# create a cluster
-kind create cluster
+# create a cluster with ingress ports exposed
+k3d cluster create --config k3d-config.yaml
 # bootstrap flux
 export GITHUB_TOKEN='<redacted>'
 flux bootstrap github \
@@ -34,3 +34,20 @@ flux bootstrap github \
   --path=demo/flux/ \
   --private=false
 ```
+
+This will slowly bootstrap the entire infrastructure according to a dependency tree. Wait for the
+following command to return a pod to ensure most of the infrastructure is ready:
+
+```bash
+kubectl get pods -n istio-system -l service.istio.io/canonical-name=kiali-gateway-istio
+```
+
+### Access
+
+Change your `/etc/hosts` file to contain an entry for routing traffic to the cluster:
+
+```
+127.0.0.1 kiali.example.com
+```
+
+You can then access

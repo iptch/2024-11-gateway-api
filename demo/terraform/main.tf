@@ -49,6 +49,11 @@ resource "docker_container" "vault" {
     "VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200",
     "VAULT_ADDR=http://0.0.0.0:8200"
   ]
+
+  # Connect to the k3d-gateway-demo network
+  networks_advanced {
+    name = "k3d-gateway-demo"
+  }
 }
 
 resource "null_resource" "wait_for_vault" {

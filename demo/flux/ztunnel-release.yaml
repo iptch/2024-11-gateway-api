@@ -9,6 +9,8 @@ spec:
     - name: istio-cni
     - name: istiod
   interval: "5m"
+  install:
+    createNamespace: true
   chart:
     spec:
       chart: ztunnel

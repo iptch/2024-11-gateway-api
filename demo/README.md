@@ -3,7 +3,7 @@
 We use `devbox` to install the required tooling for the setup, such as:
 
 - `vault`
-- `kind`
+- `k3d`
 - `kubectl`
 - `istioctl`
 - `helm`
@@ -22,8 +22,8 @@ For fined-grained control, grant the token Content read/write permissions on the
 ### Setup the Cluster
 
 ```bash
-# create a cluster
-kind create cluster
+# create a cluster with ingress ports exposed
+k3d cluster create --config k3d-config.yaml
 # bootstrap flux
 export GITHUB_TOKEN='<redacted>'
 flux bootstrap github \
@@ -38,3 +38,33 @@ cd terraform
 terrafrom init
 terraform apply
 ```
+
+This will slowly bootstrap the entire infrastructure according to a dependency tree. Wait for the
+following command to return a pod to ensure most of the infrastructure is ready:
+
+```bash
+kubectl get pods -n infra-gateway-system -l service.istio.io/canonical-name=prod-gateway-istio
+```
+
+### Access
+
+Change your `/etc/hosts` file to contain an entry for routing traffic to the cluster:
+
+```
+127.0.0.1 kiali.apps.example.com httpbin.apps.example.com
+```
+
+You can then access Kiali via `kiali.apps.example.com:8080` in your browser.
+
+Generate some load on `httpbin` to see it in Kiali:
+
+```bash
+while true; do
+   curl http://httpbin.apps.example.com:8080/headers
+   sleep 1s
+done
+```
+
+In Kiali, select the following options, and you will see the traffic appear:
+
+![](./assets/kiali-options.png)

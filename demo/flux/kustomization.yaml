@@ -2,7 +2,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+  # gateway api resources
   - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
+  # istio ambient mode setup
   - istio-namespace.yaml
   - istio-repository.yaml
   - istio-base-release.yaml
@@ -12,3 +14,16 @@ resources:
   - cert-manager-namespace.yaml
   - cert-manager-release.yaml
   - cert-manager-repository.yaml
+  # kiali setup
+  - https://raw.githubusercontent.com/istio/istio/release-1.23/samples/addons/prometheus.yaml
+  - https://raw.githubusercontent.com/istio/istio/release-1.23/samples/addons/kiali.yaml
+  # infra gateway
+  - infra-gateway-namespace.yaml
+  - infra-gateway.yaml
+  # kiali route
+  - istio-kiali-httproute.yaml
+  # app
+  - httpbin-namespace.yaml
+  - matheusfm-repository.yaml
+  - httpbin-release.yaml
+  - httpbin-httproute.yaml

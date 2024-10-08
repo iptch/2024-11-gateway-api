@@ -6,8 +6,9 @@ metadata:
 spec:
   dependsOn:
     - name: istio-base
-    - name: istio-cni
   interval: "5m"
+  install:
+    createNamespace: true
   chart:
     spec:
       chart: istiod

@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: istio-system
+  name: httpbin
   labels:
     expose-apps: "true"
+    istio.io/dataplane-mode: ambient

@@ -19,6 +19,7 @@ This will deploy, in the order listed here:
 8. A centralized Gateway for ingress traffic
 9. An HTTPbin application for testing the network
 10. The HTTPRoutes needed to access HTTPbin and Kiali from outside the cluster
+11. A PostgreSQL database to have a TCP based service in the cluster
 
 <!-- TODO: add information about Vault and Cert-Manager -->
 

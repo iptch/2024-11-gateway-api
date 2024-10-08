@@ -4,19 +4,60 @@ Repository containing the demo environment and presentation for Kubernetes Gatew
 
 ## Setup
 
-TODO add information about the setups.
+The demo environment we are setting up here utilises `k3d` to setup a 3 node Kubernetes cluster.
+Once the cluster is ready, we use FluxCD to deploy the required infrastructure and applications for
+the demo environment. This is done using the manifests found under [`./demo/flux/`](./demo/flux/).
+This will deploy, in the order listed here:
+
+1. The Gateway API CRDs
+2. Istio CRDs
+3. The Istio CNI
+4. The Istio control plane (`istiod`)
+5. ztunnel for inter-node communication
+6. A Prometheus instance
+7. Kiali, for network visualisation
+8. A centralized Gateway for ingress traffic
+9. An HTTPbin application for testing the network
+10. The HTTPRoutes needed to access HTTPbin and Kiali from outside the cluster
+
+<!-- TODO: add information about Vault and Cert-Manager -->
+
+## Slides
+
+You can find the slides under [`./slides/`](./slides/).
+
+## Demo
+
+Before starting the demo, set up the environment according to the guide in [`./demo/`](./demo/).
+
+> [!NOTE]
+> The initial setup already makes use of the Gateway API to expose Kiali and HTTPbin. For this, it
+> uses a GatewayClass provided by Istio, a centralized Gateway shared across namespaces, and two
+> HTTPRoutes routing traffic to the corresponding Kubernetes Services of the applications.
+
+### Initial Investigation
+
+<!-- TODO: add commands to check gateway resources deployed -->
+
+### Gateway Deployment
+
+<!-- TODO: deploy a new gateway to port 81 to expose other traffic -->
+
+### HTTPRoutes
+
+<!-- TODO: expose HTTPbin via new Gateway -->
+
+### TCPRoutes
+
+<!-- TODO: expose psql via new Gateway -->
+
+### Routing Options
+
+<!-- TODO: modify routes to show new capabilities -->
 
 ## Idea
 
-### Presentation
-
-Content:
-
-- what are ingresses, providers (nginx, traefik)
-- what are routes
-- what are service meshes, providers (istio, cilium)
-- what is the gateway api, providers (https://gateway-api.sigs.k8s.io/implementations/)
-- how is it different from ingress/route?
+<!-- TODO: remove this section once we have the demo -->
 
 ### Demo
 

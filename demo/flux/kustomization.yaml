@@ -24,3 +24,7 @@ resources:
   - matheusfm-repository.yaml
   - httpbin-release.yaml
   - httpbin-httproute.yaml
+  # postgresql
+  - postgresql-namespace.yaml
+  - bitnami-postgresql-oci-repository.yaml
+  - postgresql-release.yaml

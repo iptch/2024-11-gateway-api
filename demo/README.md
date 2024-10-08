@@ -42,6 +42,13 @@ following command to return a pod to ensure most of the infrastructure is ready:
 kubectl get pods -n infra-gateway-system -l service.istio.io/canonical-name=prod-gateway-istio
 ```
 
+To ensure the app is also ready, ensure the following command also returns a pod (might take up to
+5-10 minutes, depending on your internet connection to pull images):
+
+```bash
+kubectl get pods -n httpbin
+```
+
 ### Access
 
 Change your `/etc/hosts` file to contain an entry for routing traffic to the cluster:

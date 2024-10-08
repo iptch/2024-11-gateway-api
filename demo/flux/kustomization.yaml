@@ -2,8 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  # gateway api resources
-  - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
+  # gateway api resources (experimental - allows to use TCPRoute, TLSRoute, etc).
+  - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/experimental-install.yaml
   # istio ambient mode setup
   - istio-namespace.yaml
   - istio-repository.yaml

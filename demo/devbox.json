@@ -6,7 +6,8 @@
     "kubectl@1.31.0",
     "kubernetes-helm@3.16.1",
     "fluxcd@2.3.0",
-    "k3d@5.7.4"
+    "k3d@5.7.4",
+    "postgresql@16.4"
   ],
   "shell": {
     "init_hook": [],

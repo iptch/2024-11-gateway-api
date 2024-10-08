@@ -75,7 +75,7 @@ resource "vault_pki_secret_backend_root_cert" "root_cert" {
   backend = vault_mount.pki.path  
   type    = "internal"
 
-  common_name = "svc"  
+  common_name = "svc Root"  
   ttl         = "87600h"  # Time-to-live for the certificate (~10 years).
 
   depends_on = [vault_mount.pki]
@@ -84,7 +84,7 @@ resource "vault_pki_secret_backend_root_cert" "root_cert" {
 # Store the root CA certificate locally.
 resource "local_file" "ca_cert" {
   content  = vault_pki_secret_backend_root_cert.root_cert.certificate
-  filename = "${path.module}/CA_cert.crt"
+  filename = "${path.module}/ca_root.crt"
 
   depends_on = [vault_pki_secret_backend_root_cert.root_cert]
 }
@@ -146,7 +146,7 @@ resource "vault_pki_secret_backend_root_sign_intermediate" "pki_int_signed" {
 # Store the signed intermediate certificate locally.
 resource "local_file" "intermediate_cert_pem" {
   content  = vault_pki_secret_backend_root_sign_intermediate.pki_int_signed.certificate
-  filename = "${path.module}/intermediate.cert.pem"
+  filename = "${path.module}/pki_intermediate.cert.pem"
 
   depends_on = [vault_pki_secret_backend_root_sign_intermediate.pki_int_signed]
 }

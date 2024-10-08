@@ -2,6 +2,21 @@
 
 A repository containing all my presentations.
 
+## Idea
+
+<!-- TODO: remove this section once we have the slides -->
+
+### Presentation
+
+Content:
+
+- what are ingresses, providers (nginx, traefik)
+- what are routes
+- what are service meshes, providers (istio, cilium)
+- what is the gateway api, providers (https://gateway-api.sigs.k8s.io/implementations/)
+- GAMMA initiative
+- how is it different from ingress/route?
+
 ## Generating Slides
 
 Slides can be generated using the Tupfile once in the Devbox shell:

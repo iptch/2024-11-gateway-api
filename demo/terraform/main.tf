@@ -12,6 +12,10 @@ terraform {
       source  = "hashicorp/local"
       version = "~> 2.0"
     }
+    k3d = {
+      source  = "sneakybugs/k3d"
+      version = "1.0.1"
+    }
   }
 }
 
@@ -54,6 +58,7 @@ resource "docker_container" "vault" {
   networks_advanced {
     name = "k3d-gateway-demo"
   }
+  depends_on = [k3d_cluster.mycluster]
 }
 
 resource "null_resource" "wait_for_vault" {
@@ -64,6 +69,31 @@ resource "null_resource" "wait_for_vault" {
   }
 }
 
+resource "k3d_cluster" "mycluster" {
+  name = "gateway-demo"
+  # See https://k3d.io/v5.4.6/usage/configfile/#config-options
+  k3d_config = <<EOF
+apiVersion: k3d.io/v1alpha4
+kind: Simple
+
+servers: 1
+agents: 2
+image: rancher/k3s:v1.31.1-k3s1
+ports:
+  - port: 8080-8100:80-100
+    nodeFilters:
+      - loadbalancer
+options:
+  k3s:
+    extraArgs:
+      - arg: "--disable=traefik"
+        nodeFilters:
+          - server:*
+EOF
+}
+
+### Configure Vault
+
 # Enable and configure the Vault PKI secrets engine.
 resource "vault_mount" "pki" {
   path                      = "pki" 
@@ -72,7 +102,7 @@ resource "vault_mount" "pki" {
   max_lease_ttl_seconds     = 311040000  # Maximum lease time (~10 years).
   description               = "PKI secrets engine" 
 
-  depends_on = [null_resource.wait_for_vault]
+  depends_on = [docker_container.vault, null_resource.wait_for_vault]
 }
 
 # Create a self-signed root certificate.

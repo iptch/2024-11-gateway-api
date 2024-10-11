@@ -33,6 +33,10 @@ flux bootstrap github \
   --branch=main \
   --path=demo/flux/ \
   --private=false
+# launch vault through terraform
+cd terraform
+terrafrom init
+terraform apply
 ```
 
 This will slowly bootstrap the entire infrastructure according to a dependency tree. Wait for the

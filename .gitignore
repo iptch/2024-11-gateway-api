@@ -1,0 +1,4 @@
+ca_root.crt
+pki_intermediate.csr
+pki_intermediate.cert.pem
+demo/terraform/.terraform/

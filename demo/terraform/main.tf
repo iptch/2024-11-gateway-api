@@ -16,6 +16,14 @@ terraform {
       source  = "sneakybugs/k3d"
       version = "1.0.1"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
+    null = {
+      source = "hashicorp/null"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -24,17 +32,92 @@ variable "vault_address" {
 }
 
 provider "docker" {
-  host = "unix:///var/run/docker.sock"  
+  host = "unix:///var/run/docker.sock"
 }
 
 provider "vault" {
   address = var.vault_address
-  token   = "myroot"  
+  token   = "myroot"
+}
+
+provider "kubernetes" {
+  config_path    = "~/.kube/config"
+  config_context = "k3d-gateway-demo"
+}
+
+resource "k3d_cluster" "mycluster" {
+  name = "gateway-demo"
+  k3d_config = <<EOF
+apiVersion: k3d.io/v1alpha4
+kind: Simple
+
+servers: 1
+agents: 2
+image: rancher/k3s:v1.31.1-k3s1
+ports:
+  - port: 8080-8100:80-100
+    nodeFilters:
+      - loadbalancer
+options:
+  k3s:
+    extraArgs:
+      - arg: "--disable=traefik"
+        nodeFilters:
+          - server:*
+EOF
+}
+
+# Wait for Kubernetes API to be ready
+resource "null_resource" "wait_for_kubernetes" {
+  depends_on = [k3d_cluster.mycluster]
+
+  provisioner "local-exec" {
+    command = "until kubectl get nodes; do echo 'Waiting for Kubernetes...'; sleep 5; done"
+  }
+}
+
+# Create a Kubernetes Service Account for Vault
+resource "kubernetes_service_account" "vault" {
+  metadata {
+    name      = "vault-auth"
+    namespace = "default"
+  }
+
+  automount_service_account_token = true
+
+  depends_on = [null_resource.wait_for_kubernetes]
+}
+
+# Obtain the Service Account Token
+resource "null_resource" "get_service_account_token" {
+  depends_on = [kubernetes_service_account.vault]
+
+  provisioner "local-exec" {
+    command = "kubectl -n default create token vault-auth > ${path.module}/vault_sa_token"
+  }
+}
+
+# Obtain the Kubernetes API Server URL
+resource "null_resource" "get_kubernetes_host" {
+  depends_on = [null_resource.wait_for_kubernetes]
+
+  provisioner "local-exec" {
+    command = "kubectl config view --raw -o jsonpath='{.clusters[?(@.name==\"k3d-gateway-demo\")].cluster.server}' > ${path.module}/k8s_host"
+  }
+}
+
+# Obtain the Kubernetes CA Certificate
+resource "null_resource" "get_kubernetes_ca_cert" {
+  depends_on = [null_resource.wait_for_kubernetes]
+
+  provisioner "local-exec" {
+    command = "kubectl config view --raw -o jsonpath='{.clusters[?(@.name==\"k3d-gateway-demo\")].cluster.certificate-authority-data}' | base64 -d > ${path.module}/k8s_ca.crt"
+  }
 }
 
 resource "docker_image" "vault" {
-  name         = "hashicorp/vault:1.17.5" 
-  keep_locally = false  # Clean up the image if it's no longer used.
+  name         = "hashicorp/vault:1.17.5"
+  keep_locally = true
 }
 
 resource "docker_container" "vault" {
@@ -67,29 +150,6 @@ resource "null_resource" "wait_for_vault" {
   provisioner "local-exec" {
     command = "while ! curl -s ${var.vault_address}/v1/sys/health >/dev/null; do echo 'Waiting for Vault...'; sleep 1; done"
   }
-}
-
-resource "k3d_cluster" "mycluster" {
-  name = "gateway-demo"
-  # See https://k3d.io/v5.4.6/usage/configfile/#config-options
-  k3d_config = <<EOF
-apiVersion: k3d.io/v1alpha4
-kind: Simple
-
-servers: 1
-agents: 2
-image: rancher/k3s:v1.31.1-k3s1
-ports:
-  - port: 8080-8100:80-100
-    nodeFilters:
-      - loadbalancer
-options:
-  k3s:
-    extraArgs:
-      - arg: "--disable=traefik"
-        nodeFilters:
-          - server:*
-EOF
 }
 
 ### Configure Vault

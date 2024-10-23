@@ -23,7 +23,9 @@ For fined-grained control, grant the token Content read/write permissions on the
 
 ```bash
 # create a cluster with ingress ports exposed
-k3d cluster create --config k3d-config.yaml
+cd terraform
+terraform init
+terraform apply -target=k3d_cluster.mycluster
 # bootstrap flux
 export GITHUB_TOKEN='<redacted>'
 flux bootstrap github \
@@ -34,8 +36,6 @@ flux bootstrap github \
   --path=demo/flux/ \
   --private=false
 # launch vault through terraform
-cd terraform
-terrafrom init
 terraform apply
 ```
 

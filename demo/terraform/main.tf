@@ -88,33 +88,6 @@ resource "kubernetes_service_account" "vault" {
   depends_on = [null_resource.wait_for_kubernetes]
 }
 
-# Obtain the Service Account Token
-resource "null_resource" "get_service_account_token" {
-  depends_on = [kubernetes_service_account.vault]
-
-  provisioner "local-exec" {
-    command = "kubectl -n default create token vault-auth > ${path.module}/vault_sa_token"
-  }
-}
-
-# Obtain the Kubernetes API Server URL
-resource "null_resource" "get_kubernetes_host" {
-  depends_on = [null_resource.wait_for_kubernetes]
-
-  provisioner "local-exec" {
-    command = "kubectl config view --raw -o jsonpath='{.clusters[?(@.name==\"k3d-gateway-demo\")].cluster.server}' > ${path.module}/k8s_host"
-  }
-}
-
-# Obtain the Kubernetes CA Certificate
-resource "null_resource" "get_kubernetes_ca_cert" {
-  depends_on = [null_resource.wait_for_kubernetes]
-
-  provisioner "local-exec" {
-    command = "kubectl config view --raw -o jsonpath='{.clusters[?(@.name==\"k3d-gateway-demo\")].cluster.certificate-authority-data}' | base64 -d > ${path.module}/k8s_ca.crt"
-  }
-}
-
 resource "docker_image" "vault" {
   name         = "hashicorp/vault:1.17.5"
   keep_locally = true
@@ -264,14 +237,6 @@ resource "vault_pki_secret_backend_config_urls" "pki_int_urls" {
   depends_on = [vault_pki_secret_backend_intermediate_set_signed.pki_int]
 }
 
-# Enable AppRole authentication in Vault.
-resource "vault_auth_backend" "approle" {
-  type        = "approle"
-  description = "AppRole auth backend"
-
-  depends_on = [vault_pki_secret_backend_intermediate_set_signed.pki_int]
-}
-
 # Define a role in the intermediate PKI backend for certificate issuance.
 resource "vault_pki_secret_backend_role" "cluster_dot_local" {
   backend         = vault_mount.pki_int.path
@@ -283,37 +248,59 @@ resource "vault_pki_secret_backend_role" "cluster_dot_local" {
   depends_on = [vault_pki_secret_backend_config_urls.pki_int_urls]
 }
 
-# Create a policy for cert-manager to access the PKI.
+# Enable the Kubernetes Auth Method
+resource "vault_auth_backend" "kubernetes" {
+  type = "kubernetes"
+
+  depends_on = [null_resource.wait_for_vault]
+}
+
+data "external" "vault_sa_token" {
+  program = ["bash", "-c", <<-EOT
+    kubectl -n default create token vault-auth --duration=8760h --audience=vault | jq -nR '{ "token": input }'
+  EOT
+  ]
+  depends_on = [kubernetes_service_account.vault]
+}
+
+# Configure the Kubernetes Auth Backend
+resource "vault_kubernetes_auth_backend_config" "kubernetes" {
+  backend             = vault_auth_backend.kubernetes.path
+  kubernetes_host     = k3d_cluster.mycluster.host
+  kubernetes_ca_cert  = base64decode(k3d_cluster.mycluster.cluster_ca_certificate)
+  token_reviewer_jwt  = data.external.vault_sa_token.result["token"]
+
+
+  depends_on = [
+    vault_auth_backend.kubernetes,
+    data.external.vault_sa_token,
+    null_resource.wait_for_kubernetes
+  ]
+}
+
+# Create a Policy for cert-manager
 resource "vault_policy" "cert_manager" {
   name = "cert-manager"
 
   policy = <<EOF
 path "${vault_mount.pki_int.path}/sign/${vault_pki_secret_backend_role.cluster_dot_local.name}" {
-  capabilities = ["update"] 
+  capabilities = ["update"]
 }
 EOF
 
   depends_on = [
-    vault_auth_backend.approle,
-    vault_pki_secret_backend_role.cluster_dot_local
+    vault_auth_backend.kubernetes
   ]
 }
 
-# Create an AppRole for cert-manager with the associated policy.
-resource "vault_approle_auth_backend_role" "cert_manager" {
-  backend        = vault_auth_backend.approle.path
-  role_name      = "cert-manager"
-  token_policies = [vault_policy.cert_manager.name]
-  token_ttl      = 3600      # Token TTL (1 hour).
-  token_max_ttl  = 14400     # Maximum token TTL (4 hours).
+# Create a Role for cert-manager
+resource "vault_kubernetes_auth_backend_role" "cert_manager" {
+  backend                       = vault_auth_backend.kubernetes.path
+  role_name                     = "cert-manager"
+  bound_service_account_names   = ["cert-manager"]
+  bound_service_account_namespaces = ["cert-manager"]
+  token_policies                = ["cert-manager"]
+  token_ttl                           = 3600
 
-  depends_on = [vault_policy.cert_manager]
-}
-
-# Generate a secret ID for the cert-manager AppRole.
-resource "vault_approle_auth_backend_role_secret_id" "cert_manager" {
-  backend   = vault_auth_backend.approle.path
-  role_name = vault_approle_auth_backend_role.cert_manager.role_name
-
-  depends_on = [vault_approle_auth_backend_role.cert_manager]
+  depends_on = [vault_kubernetes_auth_backend_config.kubernetes]
 }

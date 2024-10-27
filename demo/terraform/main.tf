@@ -24,6 +24,10 @@ terraform {
       source = "hashicorp/null"
       version = "~> 3.0"
     }
+    flux = {
+      source = "fluxcd/flux"
+      version = "~> 1.4"
+    }
   }
 }
 
@@ -53,6 +57,9 @@ kind: Simple
 
 servers: 1
 agents: 2
+kubeAPI:
+  hostIP: "0.0.0.0"
+  hostPort: "6445"
 image: rancher/k3s:v1.31.1-k3s1
 ports:
   - port: 8080-8100:80-100
@@ -62,6 +69,9 @@ options:
   k3s:
     extraArgs:
       - arg: "--disable=traefik"
+        nodeFilters:
+          - server:*
+      - arg: "--tls-san=host.docker.internal"
         nodeFilters:
           - server:*
 EOF
@@ -74,18 +84,6 @@ resource "null_resource" "wait_for_kubernetes" {
   provisioner "local-exec" {
     command = "until kubectl get nodes; do echo 'Waiting for Kubernetes...'; sleep 5; done"
   }
-}
-
-# Create a Kubernetes Service Account for Vault
-resource "kubernetes_service_account" "vault" {
-  metadata {
-    name      = "vault-auth"
-    namespace = "default"
-  }
-
-  automount_service_account_token = true
-
-  depends_on = [null_resource.wait_for_kubernetes]
 }
 
 resource "docker_image" "vault" {
@@ -107,7 +105,8 @@ resource "docker_container" "vault" {
   env = [
     "VAULT_DEV_ROOT_TOKEN_ID=myroot",
     "VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200",
-    "VAULT_ADDR=http://0.0.0.0:8200"
+    "VAULT_ADDR=http://0.0.0.0:8200",
+    "VAULT_LOG_LEVEL=trace"
   ]
 
   # Connect to the k3d-gateway-demo network
@@ -255,25 +254,54 @@ resource "vault_auth_backend" "kubernetes" {
   depends_on = [null_resource.wait_for_vault]
 }
 
-data "external" "vault_sa_token" {
+data "external" "vault_token_reviewer_jwt" {
   program = ["bash", "-c", <<-EOT
-    kubectl -n default create token vault-auth --duration=8760h --audience=vault | jq -nR '{ "token": input }'
+    kubectl create token vault-auth --duration=8760h | jq -nR '{ "token": input }'
   EOT
   ]
-  depends_on = [kubernetes_service_account.vault]
+
+  depends_on = [kubernetes_service_account.vault_auth]
+}
+
+
+resource "kubernetes_service_account" "vault_auth" {
+  metadata {
+    name      = "vault-auth"
+  }
+  depends_on = [null_resource.wait_for_kubernetes]
+}
+
+resource "kubernetes_cluster_role_binding" "vault_auth" {
+  metadata {
+    name = "role-tokenreview-binding"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "system:auth-delegator"
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.vault_auth.metadata[0].name
+    namespace = kubernetes_service_account.vault_auth.metadata[0].namespace
+  }
+  
+  depends_on=[kubernetes_service_account.vault_auth]
 }
 
 # Configure the Kubernetes Auth Backend
 resource "vault_kubernetes_auth_backend_config" "kubernetes" {
   backend             = vault_auth_backend.kubernetes.path
-  kubernetes_host     = k3d_cluster.mycluster.host
+  kubernetes_host     = "https://host.docker.internal:6445"
   kubernetes_ca_cert  = base64decode(k3d_cluster.mycluster.cluster_ca_certificate)
-  token_reviewer_jwt  = data.external.vault_sa_token.result["token"]
+  token_reviewer_jwt  = data.external.vault_token_reviewer_jwt.result["token"]
 
 
   depends_on = [
     vault_auth_backend.kubernetes,
-    data.external.vault_sa_token,
+    data.external.vault_token_reviewer_jwt,
     null_resource.wait_for_kubernetes
   ]
 }
@@ -293,14 +321,73 @@ EOF
   ]
 }
 
-# Create a Role for cert-manager
 resource "vault_kubernetes_auth_backend_role" "cert_manager" {
-  backend                       = vault_auth_backend.kubernetes.path
-  role_name                     = "cert-manager"
-  bound_service_account_names   = ["cert-manager"]
+  backend                          = vault_auth_backend.kubernetes.path
+  role_name                        = "cert-manager"
+  bound_service_account_names      = ["cert-manager"]
   bound_service_account_namespaces = ["cert-manager"]
-  token_policies                = ["cert-manager"]
-  token_ttl                           = 3600
+  token_policies                   = ["cert-manager"]
+  token_ttl                        = 3600
 
-  depends_on = [vault_kubernetes_auth_backend_config.kubernetes]
+  depends_on = [
+    vault_kubernetes_auth_backend_config.kubernetes,
+    null_resource.create_cert_manager_sa_secret  # Ensure the Secret is created
+  ]
+}
+
+variable "github_token" {}
+
+provider "flux" {
+  kubernetes = {
+    config_path    = "~/.kube/config"
+    config_context = "k3d-gateway-demo"
+  }
+
+  git = {
+    url = "https://github.com/iptch/2024-11-gateway-api"
+    branch         = "feat/ISSUE-2-add-vault-to-demo"
+    http = {
+      username = "iptch"
+      password = var.github_token
+    }
+  }
+}
+
+resource "flux_bootstrap_git" "this" {
+  embedded_manifests = true
+  path               = "demo/flux/"
+
+  depends_on = [null_resource.wait_for_kubernetes]
+}
+
+# Check if the 'cert-manager' service account exists in the 'cert-manager' namespace
+data "kubernetes_service_account_v1" "cert_manager" {
+  metadata {
+    name      = "cert-manager"
+    namespace = "cert-manager"
+  }
+
+  depends_on = [flux_bootstrap_git.this]
+}
+
+
+# Create a Secret for the 'cert-manager' Service Account if it exists
+# (TODO: replace with kubernetes provider as soon as it is possible)
+resource "null_resource" "create_cert_manager_sa_secret" {
+  depends_on = [data.kubernetes_service_account_v1.cert_manager]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      kubectl apply -f - <<EOF
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cert-manager-sa-token
+        namespace: cert-manager
+        annotations:
+          kubernetes.io/service-account.name: "cert-manager"
+      type: kubernetes.io/service-account-token
+      EOF
+    EOT
+  }
 }

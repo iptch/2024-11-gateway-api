@@ -1,3 +1,2 @@
-demo/terraform/ca_root.crt
-demo/terraform/pki_intermediate.cert.pem
-demo/terraform/pki_intermediate.csr
+demo/terraform/variables.tfvars
+demo/terraform/modules/pki/ca_root.crt

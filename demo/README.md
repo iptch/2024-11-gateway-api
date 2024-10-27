@@ -7,6 +7,9 @@ We use `devbox` to install the required tooling for the setup, such as:
 - `kubectl`
 - `istioctl`
 - `helm`
+- `terraform`
+- `fluxcd`
+- `jq`
 
 You an initialise these tools by running `devbox shell`. This might take a while initially, but
 subsequent runs should be very fast.
@@ -22,20 +25,17 @@ For fined-grained control, grant the token Content read/write permissions on the
 ### Setup the Cluster
 
 ```bash
-# create a cluster with ingress ports exposed
+# export the GITHUB_TOKEN
+export TF_VAR_github_token='<redacted>'
+
+# run terraform script
 cd terraform
 terraform init
+
+# create k3d cluster
 terraform apply -target=k3d_cluster.mycluster
-# bootstrap flux
-export GITHUB_TOKEN='<redacted>'
-flux bootstrap github \
-  --token-auth \
-  --owner=iptch \
-  --repository=2024-11-gateway-api \
-  --branch=main \
-  --path=demo/flux/ \
-  --private=false
-# launch vault through terraform
+
+# create everything else
 terraform apply
 ```
 

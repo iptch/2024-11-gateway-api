@@ -24,19 +24,18 @@ For fined-grained control, grant the token Content read/write permissions on the
 
 ### Setup the Cluster
 
-```bash
-# export the GITHUB_TOKEN
-export TF_VAR_github_token='<redacted>'
+In order to setup your cluster, copy the variables-tmp.tfvars file into variables.tfvars file. Fill in the missing variables
 
+```bash
 # run terraform script
 cd terraform
 terraform init
 
 # create k3d cluster
-terraform apply -target=k3d_cluster.mycluster
+terraform apply -target=module.k3d_cluster -var-file="variables.tfvars"
 
 # create everything else
-terraform apply
+terraform apply -var-file="variables.tfvars"
 ```
 
 This will slowly bootstrap the entire infrastructure according to a dependency tree. Wait for the

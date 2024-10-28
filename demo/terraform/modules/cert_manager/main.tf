@@ -109,7 +109,6 @@ data "kubernetes_service_account_v1" "cert_manager" {
     name      = "cert-manager"
     namespace = "cert-manager"
   }
-
 }
 
 resource "time_sleep" "wait_30_seconds" {

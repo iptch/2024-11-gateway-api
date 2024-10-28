@@ -7,7 +7,6 @@ kube_config_path = "~/.kube/config"
 cluster_name     = "gateway-demo"
 
 # Github variables
-github_token = "<redacted>"
 git_repo_url = "https://github.com/iptch/2024-11-gateway-api"
 git_branch   = "main"
 git_username = "iptch"

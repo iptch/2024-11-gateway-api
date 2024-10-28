@@ -31,11 +31,13 @@ In order to setup your cluster, copy the variables-tmp.tfvars file into variable
 cd terraform
 terraform init
 
+export TF_VAR_github_token="<redacted>"
+
 # create k3d cluster
 terraform apply -target=module.k3d_cluster
 
 # create everything else
-terraform apply -var="github_token=<redacted>"
+terraform apply
 ```
 
 This will slowly bootstrap the entire infrastructure according to a dependency tree. Wait for the

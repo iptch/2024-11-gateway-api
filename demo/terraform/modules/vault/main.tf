@@ -33,7 +33,7 @@ resource "docker_image" "vault" {
 
 resource "docker_container" "vault" {
   name  = "vault"
-  image = docker_image.vault.name
+  image = docker_image.vault.image_id
 
   ports {
     internal = 8200
@@ -46,6 +46,8 @@ resource "docker_container" "vault" {
     "VAULT_ADDR=${var.vault_address}",
     "VAULT_LOG_LEVEL=trace"
   ]
+
+  network_mode = "bridge"
 
   networks_advanced {
     name = var.docker_network

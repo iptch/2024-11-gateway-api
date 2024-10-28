@@ -24,7 +24,7 @@ For fined-grained control, grant the token Content read/write permissions on the
 
 ### Setup the Cluster
 
-In order to setup your cluster, copy the variables-tmp.tfvars file into variables.tfvars file. Fill in the missing variables
+In order to setup your cluster, run:
 
 ```bash
 # run terraform script
@@ -76,3 +76,12 @@ done
 In Kiali, select the following options, and you will see the traffic appear:
 
 ![](./assets/kiali-options.png)
+
+### Cleanup
+
+You can cleanup the setup using the following commands:
+
+```bash
+k3d cluster delete gateway-demo
+docker rm vault
+```

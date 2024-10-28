@@ -32,10 +32,10 @@ cd terraform
 terraform init
 
 # create k3d cluster
-terraform apply -target=module.k3d_cluster -var-file="variables.tfvars"
+terraform apply -target=module.k3d_cluster
 
 # create everything else
-terraform apply -var-file="variables.tfvars"
+terraform apply -var="github_token=<redacted>"
 ```
 
 This will slowly bootstrap the entire infrastructure according to a dependency tree. Wait for the

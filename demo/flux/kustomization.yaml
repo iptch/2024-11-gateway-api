@@ -32,3 +32,5 @@ resources:
   - postgresql-namespace.yaml
   - bitnami-postgresql-oci-repository.yaml
   - postgresql-release.yaml
+  # cert manager issuer
+  - cert-issuer-release.yaml

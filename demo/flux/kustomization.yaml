@@ -34,3 +34,7 @@ resources:
   - postgresql-release.yaml
   # cert manager issuer
   - cert-issuer-release.yaml
+  # nginx
+  - nginx-namespace.yaml
+  - nginx-release.yaml
+  - nginx-repository.yaml

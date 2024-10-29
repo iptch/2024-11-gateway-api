@@ -41,6 +41,9 @@ options:
       - arg: "--disable=traefik"
         nodeFilters:
           - server:*
+      - arg: "--kube-apiserver-arg=anonymous-auth=true"
+        nodeFilters:
+          - server:*
       - arg: "--tls-san=host.docker.internal"
         nodeFilters:
           - server:*

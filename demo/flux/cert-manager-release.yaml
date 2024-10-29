@@ -12,6 +12,6 @@ spec:
         kind: HelmRepository
         name: cert-manager
         namespace: cert-manager
-      version: "v1.5.0" # Use the latest compatible version
+      version: "v1.16.0" # Use the latest compatible version
   values:
     installCRDs: true

@@ -3,7 +3,7 @@
 terraform {
   required_providers {
     docker = {
-      source = "kreuzwerker/docker"
+      source  = "kreuzwerker/docker"
       version = "~> 2.0" # adjust based on your version requirements
     }
     # add other providers as necessary
@@ -63,12 +63,12 @@ data "http" "vault_health" {
   }
 
   retry {
-    attempts = 30
+    attempts     = 30
     max_delay_ms = 2000
     min_delay_ms = 1000
   }
 
-  request_timeout_ms    = 2000
+  request_timeout_ms = 2000
 
   depends_on = [docker_container.vault]
 }

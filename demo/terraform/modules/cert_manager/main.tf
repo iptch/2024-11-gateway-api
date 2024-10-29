@@ -68,9 +68,9 @@ resource "vault_jwt_auth_backend_role" "cert_manager" {
   backend        = vault_jwt_auth_backend.kubernetes.path
   role_name      = "cert-manager"
   token_policies = [vault_policy.cert_manager.name]
-  token_ttl      = 3600
+  token_ttl      = 15
 
-  bound_audiences = ["https://kubernetes.default.svc.cluster.local"]
+  bound_audiences = ["vault://vault-issuer"]
   bound_subject   = "system:serviceaccount:cert-manager:cert-manager"
   user_claim      = "sub"
   role_type       = "jwt"

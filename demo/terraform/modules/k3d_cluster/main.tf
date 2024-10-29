@@ -3,7 +3,7 @@
 terraform {
   required_providers {
     k3d = {
-      source = "sneakybugs/k3d"
+      source  = "sneakybugs/k3d"
       version = "1.0.1"
     }
   }
@@ -20,7 +20,7 @@ variable "cluster_port" {
 }
 
 resource "k3d_cluster" "this" {
-  name = var.cluster_name
+  name       = var.cluster_name
   k3d_config = <<EOF
 apiVersion: k3d.io/v1alpha4
 kind: Simple
@@ -32,7 +32,7 @@ kubeAPI:
   hostPort: "${var.cluster_port}"
 image: rancher/k3s:v1.31.1-k3s1
 ports:
-  - port: 8080-8100:80-100
+  - port: 8443:443
     nodeFilters:
       - loadbalancer
 options:

@@ -24,7 +24,7 @@ resource "vault_pki_secret_backend_root_cert" "root_cert" {
   backend     = vault_mount.pki.path
   type        = "internal"
   common_name = "svc Root"
-  ttl         = "87600h"  # 10 years
+  ttl         = "87600h" # 10 years
 }
 
 # Store the root CA certificate locally
@@ -35,9 +35,9 @@ resource "local_file" "ca_cert" {
 
 # Configure the URLs for the PKI
 resource "vault_pki_secret_backend_config_urls" "pki_urls" {
-  backend                  = vault_mount.pki.path
-  issuing_certificates     = ["${var.vault_address}/v1/${vault_mount.pki.path}/ca"]
-  crl_distribution_points  = ["${var.vault_address}/v1/${vault_mount.pki.path}/crl"]
+  backend                 = vault_mount.pki.path
+  issuing_certificates    = ["${var.vault_address}/v1/${vault_mount.pki.path}/ca"]
+  crl_distribution_points = ["${var.vault_address}/v1/${vault_mount.pki.path}/crl"]
 }
 
 # Enable intermediate PKI at 'pki_int' path
@@ -60,7 +60,7 @@ resource "vault_pki_secret_backend_root_sign_intermediate" "pki_int_signed" {
   backend     = vault_mount.pki.path
   csr         = vault_pki_secret_backend_intermediate_cert_request.pki_int.csr
   common_name = "svc Intermediate Authority"
-  ttl         = "43800h"  # 5 years
+  ttl         = "43800h" # 5 years
   format      = "pem_bundle"
 }
 
@@ -72,18 +72,20 @@ resource "vault_pki_secret_backend_intermediate_set_signed" "pki_int" {
 
 # Configure the URLs for the intermediate PKI
 resource "vault_pki_secret_backend_config_urls" "pki_int_urls" {
-  backend                  = vault_mount.pki_int.path
-  issuing_certificates     = ["${var.vault_address}/v1/${vault_mount.pki_int.path}/ca"]
-  crl_distribution_points  = ["${var.vault_address}/v1/${vault_mount.pki_int.path}/crl"]
+  backend                 = vault_mount.pki_int.path
+  issuing_certificates    = ["${var.vault_address}/v1/${vault_mount.pki_int.path}/ca"]
+  crl_distribution_points = ["${var.vault_address}/v1/${vault_mount.pki_int.path}/crl"]
 }
 
 # Define a role for certificate issuance
 resource "vault_pki_secret_backend_role" "cluster_local" {
-  backend          = vault_mount.pki_int.path
-  name             = "cluster-local"
-  allowed_domains  = ["cluster.local"]
-  allow_subdomains = true
-  max_ttl          = "72h"
+  backend                     = vault_mount.pki_int.path
+  name                        = "cluster-local"
+  allowed_domains             = ["cluster.local", "apps.example.com"]
+  allow_subdomains            = true
+  allow_wildcard_certificates = true
+  require_cn                  = false
+  max_ttl                     = "72h"
 }
 
 output "pki_int_path" {

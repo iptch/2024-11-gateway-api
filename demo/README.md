@@ -62,13 +62,19 @@ Change your `/etc/hosts` file to contain an entry for routing traffic to the clu
 127.0.0.1 kiali.apps.example.com httpbin.apps.example.com
 ```
 
-You can then access Kiali via `kiali.apps.example.com:8080` in your browser.
+You can then access Kiali via `https://kiali.apps.example.com:8443` in your browser. This will not
+be trusted, but you can import the certificate from the our PKI to trust everything. To get the root
+CA:
+
+```bash
+curl http://localhost:8200/v1/pki/ca/pem
+```
 
 Generate some load on `httpbin` to see it in Kiali:
 
 ```bash
 while true; do
-   curl http://httpbin.apps.example.com:8080/headers
+   curl -ksL https://httpbin.apps.example.com:8443/headers
    sleep 1s
 done
 ```
@@ -82,8 +88,8 @@ In Kiali, select the following options, and you will see the traffic appear:
 You can cleanup the setup using the following commands:
 
 ```bash
-k3d cluster delete gateway-demo
+rm terraform.tfstate terraform.tfstate.backup
 docker stop vault
 docker rm vault
-docker network rm k3d-gateway-demo
+k3d cluster delete gateway-demo
 ```

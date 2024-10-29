@@ -39,7 +39,7 @@ resource "flux_bootstrap_git" "this" {
 module "cert_manager" {
   source = "./modules/cert_manager"
 
-  kubernetes_host        = "https://host.docker.internal:${var.cluster_port}"
+  kubernetes_host        = "https://k3d-${var.cluster_name}-server-0:6443"
   pki_int_path           = module.pki.pki_int_path
   role_name              = module.pki.role_name
   cluster_ca_certificate = module.k3d_cluster.cluster_ca_certificate

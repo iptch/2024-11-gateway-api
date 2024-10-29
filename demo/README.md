@@ -83,5 +83,7 @@ You can cleanup the setup using the following commands:
 
 ```bash
 k3d cluster delete gateway-demo
+docker stop vault
 docker rm vault
+docker network rm k3d-gateway-demo
 ```

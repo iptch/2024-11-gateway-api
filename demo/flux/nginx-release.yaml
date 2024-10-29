@@ -1,0 +1,24 @@
+# File: flux/nginx-gateway/helm-release.yaml
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nginx-gateway-fabric
+  namespace: nginx-gateway
+spec:
+  releaseName: nginx-gateway-fabric
+  interval: 5m
+  chart:
+    spec:
+      chart: nginx-gateway-fabric
+      version: "1.4.0"
+      sourceRef:
+        kind: HelmRepository
+        name: nginx-gateway-fabric
+        namespace: nginx-gateway
+  values:
+    controller:
+      serviceAccount:
+        create: false
+        name: nginx-gateway-service-account
+      service:
+        type: LoadBalancer

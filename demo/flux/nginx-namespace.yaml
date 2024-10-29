@@ -1,0 +1,12 @@
+# namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx-gateway
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-gateway-service-account
+  namespace: nginx-gateway

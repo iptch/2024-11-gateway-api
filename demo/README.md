@@ -26,6 +26,10 @@ For fined-grained control, grant the token Content read/write permissions on the
 
 In order to setup your cluster, run:
 
+> [!NOTE]
+> If you forked the repository, you will need to update the variables in
+> `terraform/terraform.tfvars` to point to your fork.
+
 ```bash
 # run terraform script
 cd terraform

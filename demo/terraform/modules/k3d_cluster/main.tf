@@ -35,6 +35,9 @@ ports:
   - port: 8443:443
     nodeFilters:
       - loadbalancer
+  - port: 8080:80
+    nodeFilters:
+      - loadbalancer
 options:
   k3s:
     extraArgs:

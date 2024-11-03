@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-pod
+  name: nginx-pod
+  namespace: nginx-allowed
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    run: nginx-pod
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-pod
+  name: nginx-pod
+  namespace: nginx-prohibited
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    run: nginx-pod
+status:
+  loadBalancer: {}

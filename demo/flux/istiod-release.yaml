@@ -20,3 +20,6 @@ spec:
       interval: 12h
   values:
     profile: ambient
+    pilot:
+      env:
+        PILOT_ENABLE_ALPHA_GATEWAY_API: true

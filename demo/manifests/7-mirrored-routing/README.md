@@ -1,4 +1,4 @@
-# Demo: HTTP Header Modifier
+# Demo: Mirrored Routing
 
 ## Overview
 This demo showcases how the Kubernetes Gateway API can mirror incoming requests to different backends.

@@ -8,8 +8,7 @@ This demo showcases how the Kubernetes Gateway API can rework the HTTP headers f
 
 ## Getting Started
 
-### Step 1: Set Up Base Resources
-If you haven’t already set up the base resources, run the following commands from the base directory:
+### Step 1: Run Demo
 ```sh
 kubectl apply -f httproute.yaml
 curl -kL -H "gateway-demo-version: 0.0" https://httpbin-header-modifier.apps.example.com:8443/headers | jq

@@ -6,4 +6,3 @@ resources:
   - nginx-configmap.yaml
   - nginx-bye-pod.yaml
   - nginx-hello-pod.yaml
-  - nginx-httproute.yaml

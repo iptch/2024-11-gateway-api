@@ -24,3 +24,14 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: vault-cert-apps-cert
+    - name: tcp
+      port: 5432
+      protocol: TCP
+      allowedRoutes:
+        kinds:
+          - kind: TCPRoute
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              expose-apps: "true"

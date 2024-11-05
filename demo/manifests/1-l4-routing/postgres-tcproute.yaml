@@ -1,0 +1,13 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: postgresql
+  namespace: postgresql
+spec:
+  parentRefs:
+    - name: prod-gateway
+      namespace: infra-gateway-system
+      sectionName: tcp
+    - backendRefs:
+        - name: postgresql
+          port: 5432

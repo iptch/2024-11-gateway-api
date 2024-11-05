@@ -9,7 +9,8 @@
     "k3d@5.7.4",
     "postgresql@16.4",
     "terraform@1.6.2",
-    "jq@latest"
+    "jq@latest",
+    "oha@1.4.6"
   ],
   "shell": {
     "init_hook": [],

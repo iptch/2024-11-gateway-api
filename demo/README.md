@@ -77,10 +77,7 @@ curl http://localhost:8200/v1/pki/ca/pem
 Generate some load on `httpbin` to see it in Kiali:
 
 ```bash
-while true; do
-   curl -ksL https://httpbin.apps.example.com:8443/headers
-   sleep 1s
-done
+oha -z 10m -q 20 --insecure https://httpbin.apps.example.com:8443/headers
 ```
 
 In Kiali, select the following options, and you will see the traffic appear:

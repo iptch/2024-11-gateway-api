@@ -409,51 +409,51 @@
         }
       }
     },
-    "terraform@1.6.2": {
-      "last_modified": "2023-10-25T20:49:13Z",
-      "resolved": "github:NixOS/nixpkgs/75a52265bda7fd25e06e3a67dee3f0354e73243c#terraform",
+    "oha@1.4.6": {
+      "last_modified": "2024-10-13T23:44:06Z",
+      "resolved": "github:NixOS/nixpkgs/d4f247e89f6e10120f911e2e2d2254a050d0f732#oha",
       "source": "devbox-search",
-      "version": "1.6.2",
+      "version": "1.4.6",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/x79zck74awsjgkydwzc2dfwzl6xc62h3-terraform-1.6.2",
+              "path": "/nix/store/s8680h3ni7risnv8i8fixq6lndm2nyvi-oha-1.4.6",
               "default": true
             }
           ],
-          "store_path": "/nix/store/x79zck74awsjgkydwzc2dfwzl6xc62h3-terraform-1.6.2"
+          "store_path": "/nix/store/s8680h3ni7risnv8i8fixq6lndm2nyvi-oha-1.4.6"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/mki8ax8vasjldjkmfvawih8f6ajh697z-terraform-1.6.2",
+              "path": "/nix/store/kyzkk9mzg0nzdw7s837xgjkxj6b68228-oha-1.4.6",
               "default": true
             }
           ],
-          "store_path": "/nix/store/mki8ax8vasjldjkmfvawih8f6ajh697z-terraform-1.6.2"
+          "store_path": "/nix/store/kyzkk9mzg0nzdw7s837xgjkxj6b68228-oha-1.4.6"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/c218fnllp1wa5aa0s9lxqvjpq7j02vw9-terraform-1.6.2",
+              "path": "/nix/store/fcswqmyp1lg4vrh5s72ay2w46xyp7606-oha-1.4.6",
               "default": true
             }
           ],
-          "store_path": "/nix/store/c218fnllp1wa5aa0s9lxqvjpq7j02vw9-terraform-1.6.2"
+          "store_path": "/nix/store/fcswqmyp1lg4vrh5s72ay2w46xyp7606-oha-1.4.6"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/86dqfm4mbv7aslvpm7n263vl81hvw62b-terraform-1.6.2",
+              "path": "/nix/store/9dkri9bly4bis5z5l4avkhfy9vg7pfas-oha-1.4.6",
               "default": true
             }
           ],
-          "store_path": "/nix/store/86dqfm4mbv7aslvpm7n263vl81hvw62b-terraform-1.6.2"
+          "store_path": "/nix/store/9dkri9bly4bis5z5l4avkhfy9vg7pfas-oha-1.4.6"
         }
       }
     },
@@ -579,6 +579,54 @@
             }
           ],
           "store_path": "/nix/store/1gax5xs6h1b70gk7z274kx4qh04hsn96-postgresql-16.4"
+        }
+      }
+    },
+    "terraform@1.6.2": {
+      "last_modified": "2023-10-25T20:49:13Z",
+      "resolved": "github:NixOS/nixpkgs/75a52265bda7fd25e06e3a67dee3f0354e73243c#terraform",
+      "source": "devbox-search",
+      "version": "1.6.2",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/x79zck74awsjgkydwzc2dfwzl6xc62h3-terraform-1.6.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/x79zck74awsjgkydwzc2dfwzl6xc62h3-terraform-1.6.2"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/mki8ax8vasjldjkmfvawih8f6ajh697z-terraform-1.6.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/mki8ax8vasjldjkmfvawih8f6ajh697z-terraform-1.6.2"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/c218fnllp1wa5aa0s9lxqvjpq7j02vw9-terraform-1.6.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/c218fnllp1wa5aa0s9lxqvjpq7j02vw9-terraform-1.6.2"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/86dqfm4mbv7aslvpm7n263vl81hvw62b-terraform-1.6.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/86dqfm4mbv7aslvpm7n263vl81hvw62b-terraform-1.6.2"
         }
       }
     },

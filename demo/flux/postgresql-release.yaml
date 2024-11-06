@@ -12,6 +12,8 @@ spec:
     name: bitnami-postgresql
   values:
     global:
+      networkPolicy:
+        enabled: false
       postgresql:
         auth:
           postgresPassword: postgres

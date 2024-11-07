@@ -11,9 +11,10 @@ spec:
     kind: OCIRepository
     name: bitnami-postgresql
   values:
-    global:
+    primary:
       networkPolicy:
         enabled: false
+    global:
       postgresql:
         auth:
           postgresPassword: postgres

@@ -10,7 +10,11 @@ This demo showcases how the Kubernetes Gateway API can limit the namespaces to w
 
 ### Step 1: Run Demo
 ```sh
-kubectl apply -k .
+kubectl apply -f nginx-httproute.yaml
+
+sudo -e /etc/hosts
+(add) 127.0.0.1 allowed.apps.example.com prohibited.apps.example.com
+
 
 curl -k https://allowed.apps.example.com:8443
 curl -kv https://prohibited.apps.example.com:8443

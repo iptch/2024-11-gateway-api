@@ -12,6 +12,9 @@ This demo showcases how the Kubernetes Gateway API can route based on the path o
 ```sh
 kubectl apply -f nginx-httproute.yaml
 
-curl -ksL https://nginx.apps.example.com:8443/hello
-curl -ksL https://nginx.apps.example.com:8443/bye
+sudo -e /etc/hosts
+(add) 127.0.0.1 nginx-path.apps.example.com
+
+curl -ksL https://nginx-path.apps.example.com:8443/hello
+curl -ksL https://nginx-path.apps.example.com:8443/bye
 ```

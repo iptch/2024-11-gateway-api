@@ -11,5 +11,9 @@ This demo showcases how the Kubernetes Gateway API can rework the HTTP headers f
 ### Step 1: Run Demo
 ```sh
 kubectl apply -f httproute.yaml
+
+sudo -e /etc/hosts
+(add) 127.0.0.1 httpbin-header-modifier.apps.example.com
+
 curl -kL -H "gateway-demo-version: 0.0" https://httpbin-header-modifier.apps.example.com:8443/headers | jq
 ```

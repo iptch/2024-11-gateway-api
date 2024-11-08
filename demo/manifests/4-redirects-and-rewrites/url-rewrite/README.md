@@ -12,5 +12,8 @@ This demo showcases how the Kubernetes Gateway API can rewrite the requests URL
 ```sh
 kubectl apply -f httproute-rewrite.yaml
 
+sudo -e /etc/hosts
+(add) 127.0.0.1 httpbin.apps.example.com
+
 curl -k https://httpbin.apps.example.com:8443/urlrewrite | jq
 ```

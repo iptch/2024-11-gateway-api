@@ -16,6 +16,9 @@ k apply -k ../manifests/3-request-routing/
 ```sh
 kubectl apply -f httproute.yaml
 
+sudo -e /etc/hosts
+(add) 127.0.0.1 nginx-weighted.apps.example.com
+
 while true; do
    curl -ksL https://nginx-weighted.apps.example.com:8443
    sleep 1s

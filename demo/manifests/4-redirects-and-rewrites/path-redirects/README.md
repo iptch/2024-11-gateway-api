@@ -12,5 +12,8 @@ This demo showcases how the Kubernetes Gateway API can redirect requests
 ```sh
 kubectl apply -f httproute-redirect.yaml
 
-curl -k https://httpbin.apps.example.com:8443/redirect | jq
+sudo -e /etc/hosts
+(add) 127.0.0.1 httpbin.apps.example.com
+
+curl -kL https://httpbin.apps.example.com:8443/redirect | jq
 ```

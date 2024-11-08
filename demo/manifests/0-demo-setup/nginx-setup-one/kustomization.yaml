@@ -5,4 +5,3 @@ resources:
   - nginx-namespace.yaml
   - nginx-pod.yaml
   - nginx-svc.yaml
-  - nginx-httproute.yaml

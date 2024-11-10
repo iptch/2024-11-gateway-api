@@ -13,7 +13,7 @@ This demo showcases how the Kubernetes Gateway API can route TCP requests (Layer
 
 ### Step 1: Run Demo
 
-```sh
+```bash
 kubectl apply -f postgres-tcproute.yaml
 
 # when prompted for password, enter "demo"

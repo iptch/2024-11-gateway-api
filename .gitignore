@@ -1,2 +1,3 @@
 demo/terraform/variables.tfvars
 demo/terraform/modules/pki/ca_root.crt
+.terraform.tfstate.lock.info

@@ -5,6 +5,7 @@ metadata:
   namespace: infra-gateway-system
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
+    cert-manager.io/duration: 1h
 spec:
   gatewayClassName: istio
   listeners:

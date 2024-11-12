@@ -85,7 +85,7 @@ resource "vault_pki_secret_backend_role" "cluster_local" {
   allow_subdomains            = true
   allow_wildcard_certificates = true
   require_cn                  = false
-  max_ttl                     = "72h"
+  max_ttl                     = "2h"
 }
 
 output "pki_int_path" {

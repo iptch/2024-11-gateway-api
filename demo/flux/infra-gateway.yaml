@@ -6,6 +6,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: vault-issuer
     cert-manager.io/duration: 1h
+    cert-manager.io/renew-before: 55m
 spec:
   gatewayClassName: istio
   listeners:

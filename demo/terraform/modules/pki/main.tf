@@ -77,6 +77,15 @@ resource "vault_pki_secret_backend_config_urls" "pki_int_urls" {
   crl_distribution_points = ["${var.vault_address}/v1/${vault_mount.pki_int.path}/crl"]
 }
 
+resource "vault_pki_secret_backend_crl_config" "pki_int_crl_config" {
+  backend                   = vault_mount.pki_int.path
+  expiry                    = "72h"
+  disable                   = false
+  auto_rebuild              = true
+  auto_rebuild_grace_period = "1h"
+  enable_delta              = true
+}
+
 # Define a role for certificate issuance
 resource "vault_pki_secret_backend_role" "cluster_local" {
   backend                     = vault_mount.pki_int.path
